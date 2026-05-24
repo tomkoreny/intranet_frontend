@@ -1,10 +1,9 @@
 import {
-  Component, EventEmitter, Input, OnInit, Output, ViewChild,
+  Component, EventEmitter, Input, Output, ViewChild,
 } from '@angular/core';
 import {Apollo} from 'apollo-angular';
 import gql from 'graphql-tag';
 import {NgbDropdown} from '@ng-bootstrap/ng-bootstrap';
-import {LoginService} from '../login.service';
 import { SweetAlertService } from 'ng2-sweetalert2';
 
 
@@ -67,7 +66,7 @@ interface User {
   templateUrl: './sbutton.component.html',
   styleUrls: ['./sbutton.component.scss'],
 })
-export class SButtonComponent implements OnInit {
+export class SButtonComponent {
   @Input() s: Shift;
   @Input() date: string;
   @Input() workplace: number;
@@ -75,26 +74,9 @@ export class SButtonComponent implements OnInit {
   @Output() refetch = new EventEmitter<boolean>();
   @Output() fetchUsers = new EventEmitter<boolean>();
   @ViewChild('myDrop') el: NgbDropdown;
-  @Input() a = true;
-  admin = false;
+  @Input() admin = false;
 
-  constructor(private apollo: Apollo, private login: LoginService, private swal: SweetAlertService) {
-  }
-
-
-  ngOnInit() {
-    if (this.a) {
-      this.login.isAdmin().then((admin) => {
-        this.admin = admin;
-        if (admin && this.el) {
-          this.el.openChange.subscribe((open) => {
-            if (open) {
-              this.fetchUsers.emit(true);
-            }
-          });
-        }
-      });
-    }
+  constructor(private apollo: Apollo, private swal: SweetAlertService) {
   }
 
   note(id: number, e: Event) {

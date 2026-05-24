@@ -1,18 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import gql from 'graphql-tag';
 import {Apollo, ApolloQueryObservable} from 'apollo-angular';
-
-const CurrentWorkplaces = gql`
-  query CurrentWorkplaces {
-    workplaces {
-    id, name, bgColor, color
-    }
-  }
-`;
+import {LoginService} from '../login.service';
 
 
 interface QueryResponse {
+  thisUser: User;
   workplaces: [Workplace];
+  users: [User];
+  allShifts: [DayType];
 }
 
 interface Workplace {
@@ -23,8 +19,19 @@ interface Workplace {
   id: number;
 }
 
-const AllShifts = gql`
-  query allShifts($date: String!) {
+const ShiftsView = gql`
+  query shiftsView($date: String!) {
+    thisUser {
+      id,
+      perms
+    }
+    workplaces {
+      id, name, bgColor, color
+    }
+    users {
+      id, name, shortName, color, bgColor,
+      workplaces { id }
+    }
     allShifts(Date: $date) {
       Day, Workplaces {
         Id, Shifts {
@@ -33,7 +40,7 @@ const AllShifts = gql`
           note
         }
       }
-    },
+    }
   }
 `;
 interface Rtrn {
@@ -56,9 +63,11 @@ interface Shift {
 interface User {
   id: number;
   name: string;
+  shortName: string;
   color: string;
   bgColor: string;
   perms: [string];
+  workplaces: [Workplace];
 }
 
 
@@ -71,29 +80,35 @@ export class ShiftsGridComponent implements OnInit {
   t;
   days;
   workplaces;
-  query: ApolloQueryObservable<Rtrn>;
+  users: User[];
+  admin = false;
+  query: ApolloQueryObservable<QueryResponse>;
   shifts: [DayType];
-  constructor(private apollo: Apollo) { }
+  constructor(private apollo: Apollo, private login: LoginService) { }
 
   ngOnInit() {
     this.t = new Date().toISOString().substr(0, 7);
     this.days = Array.from(new Array(this.daysInMonth(new Date(this.t))), (val, index) => index + 1);
-    this.apollo.query<QueryResponse>({
-      query: CurrentWorkplaces,
-    }).subscribe(({data}) => {
-      if (data) {
-        this.workplaces = data.workplaces;
-      }
-    });
-    this.query = this.apollo.watchQuery<Rtrn>({
-      query: AllShifts,
+    this.query = this.apollo.watchQuery<QueryResponse>({
+      query: ShiftsView,
       variables: {
         'date': this.t
       }
     });
     this.query.subscribe((res) => {
+      this.workplaces = res.data.workplaces;
+      this.users = res.data.users;
       this.shifts = res.data.allShifts;
+      this.login.user = res.data.thisUser;
+      this.admin = !!(res.data.thisUser && res.data.thisUser.perms && res.data.thisUser.perms.includes('admin'));
     });
+  }
+
+  getUsers(w) {
+    if (!this.users) {
+      return [];
+    }
+    return this.users.filter((u) => u.workplaces && !!u.workplaces.find((workplace) => workplace.id === w));
   }
 
   getShifts(d, w) {

@@ -11,7 +11,7 @@
   <tr *ngFor="let d of days" style="border: 2px solid black">
     <td class="sticky-left thead" [ngStyle]="{'background-color': getBgForDay(d)}">{{d}}</td>
     <td *ngFor="let w of workplaces" class="align-top">
-      <app-shift-button (r)="omg()" [day]="d" [date]="t" [workplace]="w.id" [shifts]="getShifts(d, w.id)"></app-shift-button>
+      <app-shift-button (r)="omg()" [day]="d" [date]="t" [workplace]="w.id" [shifts]="getShifts(d, w.id)" [users]="getUsers(w.id)" [admin]="admin"></app-shift-button>
     </td>
   </tr>
 </table>

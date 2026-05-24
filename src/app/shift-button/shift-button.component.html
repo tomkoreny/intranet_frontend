@@ -1,2 +1,2 @@
-<app-sbutton *ngFor="let s of shifts" (fetchUsers)="fetchUsers()" (refetch)="refetch()" [workplace]="workplace" [date]="getDate()"  [s]="s" [users]="users"></app-sbutton>
-<app-sbutton *ngIf="shifts.length == 0" (fetchUsers)="fetchUsers()" (refetch)="refetch()" [workplace]="workplace" [date]="getDate()" [users]="users"></app-sbutton>
+<app-sbutton *ngFor="let s of shifts" (fetchUsers)="fetchUsers()" (refetch)="refetch()" [workplace]="workplace" [date]="getDate()"  [s]="s" [users]="users" [admin]="admin"></app-sbutton>
+<app-sbutton *ngIf="shifts.length == 0" (fetchUsers)="fetchUsers()" (refetch)="refetch()" [workplace]="workplace" [date]="getDate()" [users]="users" [admin]="admin"></app-sbutton>
