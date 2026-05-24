@@ -40,10 +40,9 @@ const client = new ApolloClient({
 networkInterface.use([{
   applyMiddleware(req, next) {
     if (!req.options.headers) {
-      // req.options.headers = {};  // Create the header object if needed.
+      req.options.headers = {};  // Create the header object if needed.
     }
     req.options.headers['token'] = localStorage.getItem('token') ? localStorage.getItem('token') : null;
-    req.options.headers['Access-Control-Allow-Origin'] = environment.url;
     next();
   }
 }]);
