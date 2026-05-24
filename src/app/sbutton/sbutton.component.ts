@@ -75,6 +75,7 @@ export class SButtonComponent {
   @Output() fetchUsers = new EventEmitter<boolean>();
   @ViewChild('myDrop') el: NgbDropdown;
   @Input() admin = false;
+  @Input() a = true;
 
   constructor(private apollo: Apollo, private swal: SweetAlertService) {
   }
